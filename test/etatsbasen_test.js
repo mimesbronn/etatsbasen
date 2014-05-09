@@ -1,7 +1,6 @@
 'use strict';
 
 var etatsbasen = require('../lib/etatsbasen.js');
-var events = require('events');
 
 /*
   ======== A Handy Little Nodeunit Reference ========

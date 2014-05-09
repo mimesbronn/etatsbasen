@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+'use strict';
 var path = require('path');
 var fs = require('fs');
 var pkg = require(path.join(__dirname, '..', 'package.json'));
@@ -43,6 +44,9 @@ if (argv.h || fileNotFound()) {
 }
 
 var ret = etatsbasen.printCSV(function(err) {
+  if (err) {
+    throw err;
+  }
   }, options);
 
 if (ret) {
