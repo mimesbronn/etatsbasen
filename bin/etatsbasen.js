@@ -19,12 +19,28 @@ if (argv.v) {
 var options = {};
 options.filename = argv.f || 'etatsbasen.csv';
 
-if (argv.c && 'string' === typeof argv.c) {
-  if ('all' !== argv.c) {
-    options.categories = argv.c.split(',');
+if (argv.c) {
+  if (Array.isArray(argv.c)) {
+    options.categories = argv.c;
+ } else if ('string' === typeof argv.c) {
+   if ('all' !== argv.c) {
+     options.categories = [argv.c];
+   }
+ } else {
+   options.categories = defaultCategories;
+ }
+}
+
+if (argv.o) {
+  if (Array.isArray(argv.o)) {
+    options.headers = argv.o;
+  } else if ('string' === typeof argv.o ||
+            'number' === typeof argv.o) {
+    options.headers = [argv.o];
+  } else {
+    console.log('Unable to parse -o option(s)');
+    process.exit(1);
   }
-} else {
-  options.categories = defaultCategories;
 }
 
 function fileNotFound() {
@@ -41,6 +57,7 @@ if (argv.h || fileNotFound()) {
     '',
     '  -c [all|[c1,c2,..]]   Categories to include (defaults: `' + defaultCategories.join(',') + '`)',
     '  -f [file]             File to read from (defaults: `etatsbasen.csv`)',
+    '  -o h1[,h2,h3]         Include only these headers in output (id or name)',
     '  -v                    Print version.',
     '  -h                    Write this help.'
   ].join('\n'));
