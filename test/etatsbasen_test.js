@@ -78,17 +78,18 @@ exports.etatsbasen = {
     'filter headers': function(test) {
       var oldLogger = console.log;
       console.log = function(str) {
-        test.expect(5);
+        test.expect(6);
         test.ok(str.match(/.*request\_email.*/), 'Can\'t find filtered header email');
         test.equal(str.split('\n').length, 10);
         test.ok(!str.match(/\,\,/), 'Found empty entries (WARNING: suspect test)');
         test.ok(str.match(/.*name\.nn.*/, 'Missing name.nn header'));
+        test.ok(str.match(/^\#id/, 'Missing id header'));
       };
       etatsbasen.printCSV(function(err) {
         console.log = oldLogger;
         test.ok(!err);
         test.done();
-      }, { filename: 'fixtures/2.csv', headers: ['request_email', 3] });
+      }, { filename: 'fixtures/2.csv', headers: ['request_email', 3, 0] });
     }
   }
   };

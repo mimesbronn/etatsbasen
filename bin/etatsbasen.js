@@ -55,9 +55,9 @@ if (argv.h || fileNotFound()) {
   console.log([
     'usage: etatsbasen [options]',
     '',
-    '  -c [all|[c1,c2,..]]   Categories to include (defaults: `' + defaultCategories.join(',') + '`)',
-    '  -f [file]             File to read from (defaults: `etatsbasen.csv`)',
-    '  -o h1[,h2,h3]         Include only these headers in output (id or name)',
+    '  [-c all|-c c1 -c c2]  Categories to include (defaults: `' + defaultCategories.join(',') + '`)',
+    '  [-f file]             File to read from (defaults: `etatsbasen.csv`)',
+    '  [-o h1 -o h1]         Include only these headers in output (id or name)',
     '  -v                    Print version.',
     '  -h                    Write this help.'
   ].join('\n'));
