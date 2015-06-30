@@ -1,11 +1,22 @@
-etatsbasen
-==========
+# Etatsbasen
 
 Verktøy til å eksportere fra https://github.com/mimesbronn/etatsbasen-data
 Lager import som er egnet for import til alaveteli.
 
-usage
------
+## Installasjon
+
+```sh
+$ git clone https://github.com/mimesbronn/etatsbasen.git
+$ cd etatsbasen
+$ sudo npm install -g
+$ git clone https://github.com/mimesbronn/etatsbasen-data.git
+$ cd etatsbasen-data
+$ etatsbasen
+```
+
+## Opsjoner
+
+Opsjoner skal ikke være nødvendig. Den har default verdier som er egnet for Mimes brønn
 
 ```sh
 $ etatsbasen -h
@@ -17,8 +28,3 @@ $ etatsbasen -h
   -v                    Print version.
   -h                    Write this help.
 ```
-
-examples
---------
-
-TODO
