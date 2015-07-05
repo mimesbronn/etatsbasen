@@ -10,7 +10,7 @@ VERSION="python-etatsbasen-v0.1"
 DEFAULT_CATEGORIES = "12,14,17,18,27,33,38,66,68,76"
 DEFAULT_FILENAME = "etatsbasen-small.csv" # "etatsbasen.csv"
 
-DEFAULT_COLUMNS = "url_nb,url_en,kommunenummer,orgid,orgstructid,parentid";
+DEFAULT_COLUMNS = ["url_nb","url_en","kommunenummer","orgid","orgstructid","parentid"];
 
 RENAME_HEADERS = {
     'tailid': 'id',
@@ -110,10 +110,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Tool for exporting etatsbasen-data to a file that can be imported into alaveteli.')
     parser.add_argument('-c', metavar="all|c1[,c2,c3,..]", default=DEFAULT_CATEGORIES, help="Categories to include (default: \"%s\")" % (DEFAULT_CATEGORIES))
     parser.add_argument('-f', metavar="file", default=DEFAULT_FILENAME, help="File to read from (default: \"%s\")" % (DEFAULT_FILENAME))
-    parser.add_argument('-o', metavar="all|headerName1[,headername2,...] ", default=DEFAULT_COLUMNS, help="Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
+    parser.add_argument('-o', action='append', metavar="-o headerName1 [-o headername2 ...] ", help="Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
     parser.add_argument('-v', help="Print version (%s) and exit" % (VERSION), action='store_true')
     args = parser.parse_args()
-    
     options = {}
     
     if args.v:
@@ -126,10 +125,15 @@ if __name__ == "__main__":
         print("%s: No such file" % (args.f), file=sys.stderr)
         sys.exit(0)
 
-    if args.o == "all":
-        options["headers"] = ["all"]
+    if args.o:
+        for value in args.o:
+            if "," in value:
+                # Hard fail if someone uses old syntax
+                print("Failed to parse \"-o %s\"; Old syntax with comma separated list not supported" % (" -o ".join(args.o)), file=sys.stderr)
+                sys.exit(0)
+        options["headers"] = args.o
     else:
-        options["headers"] = args.o.split(',')
+        options["headers"] = DEFAULT_COLUMNS
 
     try:
         if args.c == "all":
@@ -139,5 +143,5 @@ if __name__ == "__main__":
     except ValueError as ve:
         print("Failed to parse \"-c %s\"; Categories must comma separated list of only integers" % (args.c), file=sys.stderr)
         sys.exit(0)
-    
+
     printCSV(options)
