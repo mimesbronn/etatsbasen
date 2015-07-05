@@ -10,6 +10,8 @@ VERSION="python-etatsbasen-v0.1"
 DEFAULT_CATEGORIES = "12,14,17,18,27,33,38,66,68,76"
 DEFAULT_FILENAME = "etatsbasen-small.csv" # "etatsbasen.csv"
 
+DEFAULT_COLUMNS = "url_nb,url_en,kommunenummer,orgid,orgstructid,parentid";
+
 def cleanup_email(string):
     fix1 = re.sub(r"^mailto:?", "", string)
     if fix1 == valid_email(fix1):
@@ -63,6 +65,18 @@ def filter_email(row):
     return row
 
 
+
+def filter_column(row, headers):
+    if row == None:
+        return None
+    if len(headers) == 1 and headers[0] == "all":
+        return row # We should include all headers, shortcut
+    filtered_row = {}
+    for key in row:
+        if key in headers:
+            filtered_row[key] = row[key]
+    return filtered_row
+
 def printCSV(options):
     print(options)
     with open(options["inputfile"], newline='') as csvfile:
@@ -71,8 +85,10 @@ def printCSV(options):
         for row in reader:
             row = filter_orgstructid(row, options["categories"])
             row = filter_email(row)
+            row = filter_column(row, options["headers"])
             if row != None:
                 filtered_rows.append(row)
+    print(filtered_rows)
     pass
 
 
@@ -80,7 +96,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Tool for exporting etatsbasen-data to a file that can be imported into alaveteli.')
     parser.add_argument('-c', metavar="all|c1[,c2,c3,..]", default=DEFAULT_CATEGORIES, help="Categories to include (default: \"%s\")" % (DEFAULT_CATEGORIES))
     parser.add_argument('-f', metavar="file", default=DEFAULT_FILENAME, help="File to read from (default: \"%s\")" % (DEFAULT_FILENAME))
-    parser.add_argument('-o', metavar="h1[,h2,h3...] ", help="Include only these headers in output (id or name)")
+    parser.add_argument('-o', metavar="all|headerName1[,headername2,...] ", default=DEFAULT_COLUMNS, help="Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
     parser.add_argument('-v', help="Print version (%s) and exit" % (VERSION), action='store_true')
     args = parser.parse_args()
     
@@ -95,11 +111,12 @@ if __name__ == "__main__":
     else:
         print("%s: No such file" % (args.f), file=sys.stderr)
         sys.exit(0)
-    
-    if args.o:
-        options["headers"] = args.o.split(',')
+
+    if args.o == "all":
+        options["headers"] = ["all"]
     else:
-        options["headers"] = None
+        options["headers"] = args.o.split(',')
+
     try:
         if args.c == "all":
             options["categories"] = ["all"]
