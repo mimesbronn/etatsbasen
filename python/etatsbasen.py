@@ -38,6 +38,8 @@ rename = {
 def filter_orgstructid(row, categories):
     if row == None:
         return None
+    if len(categories) == 1 and categories[0] == "all":
+        return row
     if int(row["orgstructid"]) in categories:
         return row
     else:
@@ -59,7 +61,6 @@ def filter_email(row):
             print("Skipping tailid %s: Invalid email (%s)" % (row['tailid'], row['email']), file=sys.stderr)
             return None # Invalid email, skip
     return row
-
 
 
 def printCSV(options):
@@ -100,7 +101,10 @@ if __name__ == "__main__":
     else:
         options["headers"] = None
     try:
-        options["categories"] = [ int(x) for x in args.c.split(',') ]
+        if args.c == "all":
+            options["categories"] = ["all"]
+        else:
+            options["categories"] = [ int(x) for x in args.c.split(',') ]
     except ValueError as ve:
         print("Failed to parse \"-c %s\"; Categories must comma separated list of only integers" % (args.c), file=sys.stderr)
         sys.exit(0)
