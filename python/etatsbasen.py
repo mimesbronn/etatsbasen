@@ -33,14 +33,14 @@ def cleanup_email(string):
     for fix2 in split:
         if fix2 == valid_email(fix2):
             return fix2
+    fix3 = re.sub(r"\.$", "", string)
+    if fix3 == valid_email(fix3):
+        return fix3
     return False
 
 def valid_email(string):
-    # Think about using https://pypi.python.org/pypi/validate_email ?
-    name, email = parseaddr(string)
-    if (email == string and '@' in email):
-        return email
-
+    if re.match(r"^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$", string):
+        return string
 
 def filter_orgstructid(row, categories):
     if row == None:
