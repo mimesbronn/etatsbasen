@@ -98,6 +98,17 @@ def trim_row(row):
         trimmed_row[key] = row[key].strip()
     return trimmed_row
 
+
+def add_tags(row):
+    if row == None:
+        return None
+    return row
+
+def add_url(row):
+    if row == None:
+        return None
+    return row
+
 def printCSV(options):
     print(options)
     with open(options["inputfile"], newline='') as csvfile:
@@ -108,7 +119,10 @@ def printCSV(options):
             row = filter_email(row)
             row = renameHeader(row)
             row = trim_row(row)
+            row = add_tags(row)
+            row = add_url(row)
             row = filter_column(row, options["headers"])
+            
             if row != None:
                 filtered_rows.append(row)
     print(filtered_rows)
