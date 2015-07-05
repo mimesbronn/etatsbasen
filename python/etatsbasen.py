@@ -12,6 +12,14 @@ DEFAULT_FILENAME = "etatsbasen-small.csv" # "etatsbasen.csv"
 
 DEFAULT_COLUMNS = "url_nb,url_en,kommunenummer,orgid,orgstructid,parentid";
 
+RENAME_HEADERS = {
+    'tailid': 'id',
+    'email': 'request_email',
+    'name_nb': 'name',
+    'name_nn': 'name.nn',
+    'name_en': 'name.en'
+  };
+
 def cleanup_email(string):
     fix1 = re.sub(r"^mailto:?", "", string)
     if fix1 == valid_email(fix1):
@@ -29,13 +37,6 @@ def valid_email(string):
     if (email == string and '@' in email):
         return email
 
-rename = {
-    'tailid': 'id',
-    'email': 'request_email',
-    'name_nb': 'name',
-    'name_nn': 'name.nn',
-    'name_en': 'name.en'
-  };
 
 def filter_orgstructid(row, categories):
     if row == None:
@@ -47,6 +48,7 @@ def filter_orgstructid(row, categories):
     else:
         print("Skipping tailid %s: orgstructid not in selected categories (%s not in %s)" % (row['tailid'], row['orgstructid'], categories), file=sys.stderr)
         return None
+
 
 def filter_email(row):
     if row == None:
@@ -64,6 +66,17 @@ def filter_email(row):
             return None # Invalid email, skip
     return row
 
+
+def renameHeader(row):
+    if row == None:
+        return None
+    renamed_row = {}
+    for key in row:
+        if key in RENAME_HEADERS:
+            renamed_row[RENAME_HEADERS[key]] = row[key]
+        else:
+            renamed_row[key] = row[key]
+    return renamed_row
 
 
 def filter_column(row, headers):
@@ -85,6 +98,7 @@ def printCSV(options):
         for row in reader:
             row = filter_orgstructid(row, options["categories"])
             row = filter_email(row)
+            row = renameHeader(row)
             row = filter_column(row, options["headers"])
             if row != None:
                 filtered_rows.append(row)
