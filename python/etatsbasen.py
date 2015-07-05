@@ -120,10 +120,10 @@ def add_url(row):
     return row
 
 def printCSV(options):
-    print(options)
-    with open(options["inputfile"], newline='') as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
+    with open(options["inputfile"], "r") as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',', quotechar='"', strict=True)
         filtered_rows = []
+        header = reader.fieldnames
         for row in reader:
             row = filter_orgstructid(row, options["categories"])
             row = filter_email(row)
@@ -135,15 +135,20 @@ def printCSV(options):
             
             if row != None:
                 filtered_rows.append(row)
-    print(filtered_rows)
+    writer = csv.DictWriter(sys.stdout, delimiter=',', quotechar='"', lineterminator="\n", quoting=csv.QUOTE_MINIMAL, fieldnames=options["headers"], extrasaction='raise')
+    #writer.writeheader()
+    print("#%s" % (",".join(options["headers"])))
+    for row in filtered_rows:
+        writer.writerow(row)
     pass
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Tool for exporting etatsbasen-data to a file that can be imported into alaveteli.')
-    parser.add_argument('-c', action='append', metavar="-c all|-c 12 -c 14...]", help="Categories to include (default: \"%s\")" % (DEFAULT_CATEGORIES))
+    parser.add_argument('-c', action='append', metavar="all | -c 12 -c 14 -c ...", help="Categories to include (default: \"%s\")" % ("all"))
     parser.add_argument('-f', metavar="file", default=DEFAULT_FILENAME, help="File to read from (default: \"%s\")" % (DEFAULT_FILENAME))
-    parser.add_argument('-o', action='append', metavar="-o headerName1 [-o headername2 ...] ", help="Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
+    #parser.add_argument('-o', action='append', metavar="-o headerName1 [-o headername2 ...] ", help="(i don't really work) ... Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
+    parser.add_argument('-u', action='append', metavar="headerName1 -u ...", help="Columns and order of columns to output (default: %s)" % (",".join(DEFAULT_COLUMNS)))
     parser.add_argument('-v', help="Print version (%s) and exit" % (VERSION), action='store_true')
     args = parser.parse_args()
     options = {}
@@ -157,24 +162,23 @@ if __name__ == "__main__":
     else:
         fatal("%s: No such file" % (args.f))
 
-    if args.o:
-        for value in args.o:
-            if "," in value:
-                # Hard fail if someone uses old syntax
-                fatal("Failed to parse \"-o %s\"; Old syntax with comma separated list not supported" % (" -o ".join(args.o)))
-        options["headers"] = args.o
+    if args.u:
+        options["headers"] = args.u
     else:
         options["headers"] = DEFAULT_COLUMNS
 
-    try:
-        if args.c[0] == "all":
-            if len(args.c) == 1:
-                options["categories"] = ["all"]
+    if args.c:
+        try:
+            if args.c[0] == "all":
+                if len(args.c) == 1:
+                    options["categories"] = ["all"]
+                else:
+                    fatal("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
             else:
-                fatal("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
-        else:
-            options["categories"] = [ int(x) for x in args.c ]
-    except ValueError as ve:
-        print("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
+                options["categories"] = [ int(x) for x in args.c ]
+        except ValueError as ve:
+            print("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
+    else:
+        options["categories"] = ["all"] #DEFAULT_CATEGORIES
 
     printCSV(options)
