@@ -7,7 +7,7 @@ import csv
 import re
 
 VERSION="python-etatsbasen-v0.1"
-DEFAULT_CATEGORIES = [12,14,17,18,27,33,38,66,68,76]
+DEFAULT_CATEGORIES = ["all"]
 DEFAULT_FILENAME = "etatsbasen.csv"
 
 DEFAULT_COLUMNS = ["id","request_email","name","name.nn","name.en","tag_string","home_page"]
@@ -146,7 +146,7 @@ def printCSV(options):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Tool for exporting etatsbasen-data to a file that can be imported into alaveteli.')
-    parser.add_argument('-c', action='append', metavar="all | -c 12 -c 14 -c ...", help="Categories to include (default: \"%s\")" % ("all"))
+    parser.add_argument('-c', action='append', metavar="all | -c 12 -c 14 -c ...", help="Categories to include (default: \"%s\")" % (",".join(DEFAULT_CATEGORIES)))
     parser.add_argument('-f', metavar="file", default=DEFAULT_FILENAME, help="File to read from (default: \"%s\")" % (DEFAULT_FILENAME))
     #parser.add_argument('-o', action='append', metavar="-o headerName1 [-o headername2 ...] ", help="(i don't really work) ... Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
     parser.add_argument('-u', action='append', metavar="headerName1 -u ...", help="Columns and order of columns to output (default: %s)" % (",".join(DEFAULT_COLUMNS)))
@@ -180,6 +180,6 @@ if __name__ == "__main__":
         except ValueError as ve:
             print("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
     else:
-        options["categories"] = ["all"] #DEFAULT_CATEGORIES
+        options["categories"] = DEFAULT_CATEGORIES
 
     printCSV(options)
