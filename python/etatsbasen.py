@@ -90,6 +90,14 @@ def filter_column(row, headers):
             filtered_row[key] = row[key]
     return filtered_row
 
+def trim_row(row):
+    if row == None:
+        return None
+    trimmed_row = {}
+    for key in row:
+        trimmed_row[key] = row[key].strip()
+    return trimmed_row
+
 def printCSV(options):
     print(options)
     with open(options["inputfile"], newline='') as csvfile:
@@ -99,6 +107,7 @@ def printCSV(options):
             row = filter_orgstructid(row, options["categories"])
             row = filter_email(row)
             row = renameHeader(row)
+            row = trim_row(row)
             row = filter_column(row, options["headers"])
             if row != None:
                 filtered_rows.append(row)
