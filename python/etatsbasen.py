@@ -10,7 +10,7 @@ VERSION="python-etatsbasen-v0.1"
 DEFAULT_CATEGORIES = [12,14,17,18,27,33,38,66,68,76]
 DEFAULT_FILENAME = "etatsbasen-small.csv" # "etatsbasen.csv"
 
-DEFAULT_COLUMNS = ["url_nb","url_en","kommunenummer","orgid","orgstructid","parentid"];
+DEFAULT_COLUMNS = ["id","request_email","name","name.nn","name.en","tag_string","home_page"]
 
 RENAME_HEADERS = {
     'tailid': 'id',
