@@ -106,6 +106,7 @@ def trim_row(row):
 def add_tags(row):
     if row == None:
         return None
+    row['tag_string'] = row['orgstructid']
     return row
 
 def add_url(row):
