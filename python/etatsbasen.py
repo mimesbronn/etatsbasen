@@ -111,6 +111,12 @@ def add_tags(row):
 def add_url(row):
     if row == None:
         return None
+    if row["url_nb"].strip() != "":
+        row["home_page"] = row["url_nb"]
+    elif row ["url_en"].strip() != "":
+        row["home_page"] = row["url_en"]
+    else:
+        row["home_page"] = ""
     return row
 
 def printCSV(options):
