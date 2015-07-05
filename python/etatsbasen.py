@@ -7,7 +7,7 @@ import csv
 import re
 
 VERSION="python-etatsbasen-v0.1"
-DEFAULT_CATEGORIES = "12,14,17,18,27,33,38,66,68,76"
+DEFAULT_CATEGORIES = [12,14,17,18,27,33,38,66,68,76]
 DEFAULT_FILENAME = "etatsbasen-small.csv" # "etatsbasen.csv"
 
 DEFAULT_COLUMNS = ["url_nb","url_en","kommunenummer","orgid","orgstructid","parentid"];
@@ -19,6 +19,10 @@ RENAME_HEADERS = {
     'name_nn': 'name.nn',
     'name_en': 'name.en'
   };
+
+def fatal(msg):
+    print(msg, file=sys.stderr)
+    sys.exit(0)
 
 def cleanup_email(string):
     fix1 = re.sub(r"^mailto:?", "", string)
@@ -131,7 +135,7 @@ def printCSV(options):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Tool for exporting etatsbasen-data to a file that can be imported into alaveteli.')
-    parser.add_argument('-c', metavar="all|c1[,c2,c3,..]", default=DEFAULT_CATEGORIES, help="Categories to include (default: \"%s\")" % (DEFAULT_CATEGORIES))
+    parser.add_argument('-c', action='append', metavar="-c all|-c 12 -c 14...]", help="Categories to include (default: \"%s\")" % (DEFAULT_CATEGORIES))
     parser.add_argument('-f', metavar="file", default=DEFAULT_FILENAME, help="File to read from (default: \"%s\")" % (DEFAULT_FILENAME))
     parser.add_argument('-o', action='append', metavar="-o headerName1 [-o headername2 ...] ", help="Include only these headers/columns in output (post-rename)(default: \"%s\")" % (DEFAULT_COLUMNS))
     parser.add_argument('-v', help="Print version (%s) and exit" % (VERSION), action='store_true')
@@ -145,26 +149,26 @@ if __name__ == "__main__":
     if os.path.isfile(args.f):
         options["inputfile"] =  args.f
     else:
-        print("%s: No such file" % (args.f), file=sys.stderr)
-        sys.exit(0)
+        fatal("%s: No such file" % (args.f))
 
     if args.o:
         for value in args.o:
             if "," in value:
                 # Hard fail if someone uses old syntax
-                print("Failed to parse \"-o %s\"; Old syntax with comma separated list not supported" % (" -o ".join(args.o)), file=sys.stderr)
-                sys.exit(0)
+                fatal("Failed to parse \"-o %s\"; Old syntax with comma separated list not supported" % (" -o ".join(args.o)))
         options["headers"] = args.o
     else:
         options["headers"] = DEFAULT_COLUMNS
 
     try:
-        if args.c == "all":
-            options["categories"] = ["all"]
+        if args.c[0] == "all":
+            if len(args.c) == 1:
+                options["categories"] = ["all"]
+            else:
+                fatal("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
         else:
-            options["categories"] = [ int(x) for x in args.c.split(',') ]
+            options["categories"] = [ int(x) for x in args.c ]
     except ValueError as ve:
-        print("Failed to parse \"-c %s\"; Categories must comma separated list of only integers" % (args.c), file=sys.stderr)
-        sys.exit(0)
+        print("Failed to parse \"-c %s\"; Categories must be integers or only \"-c all\"" % (" -c ".join(args.c)))
 
     printCSV(options)
