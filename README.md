@@ -14,9 +14,33 @@ $ cd etatsbasen-data
 $ etatsbasen
 ```
 
-## Opsjoner
+## Opsjoner (python)
 
-Opsjoner skal ikke være nødvendig. Den har default verdier som er egnet for Mimes brønn
+Opsjoner skal ikke være nødvendig. Den har default verdier som er egnet for Mimes brønn.
+
+```
+$ ./etatsbasen.py -h
+usage: etatsbasen.py [-h] [-c all | -c 12 -c 14 -c ...] [-f file]
+                     [-u headerName1 -u ...] [-v]
+
+Tool for exporting etatsbasen-data to a file that can be imported into
+alaveteli.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c all | -c 12 -c 14 -c ...
+                        Categories to include (default: "all")
+  -f file               File to read from (default: "etatsbasen.csv")
+  -u headerName1 -u ...
+                        Columns and order of columns to output (default: id,re
+                        quest_email,name,name.nn,name.en,tag_string,home_page)
+  -v                    Print version (python-etatsbasen-v0.1) and exit
+```
+
+## Opsjoner (javascript)
+
+Opsjoner skal ikke være nødvendig. Den har default verdier som er egnet for Mimes brønn.
+Dokumentasjonen på opsjonene under er utdatert.
 
 ```sh
 $ etatsbasen -h
